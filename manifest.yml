@@ -17,3 +17,6 @@ resources:
 permissions:
   scopes:
     - storage:app
+app:
+  id: ari:cloud:ecosystem::app/1e3728cf-70cb-47e2-8f16-b62fbb0446f9
+  name: forge-assignment
