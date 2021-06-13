@@ -14,9 +14,13 @@ modules:
 resources:
   - key: main
     path: static/spa/build
+    tunnel:
+      port: 3000
+app:
+  id: ari:cloud:ecosystem::app/85f0cb85-9461-4ffe-b063-309d1f82dfbd
+  name: task
 permissions:
   scopes:
-    - storage:app
-app:
-  id: ari:cloud:ecosystem::app/1e3728cf-70cb-47e2-8f16-b62fbb0446f9
-  name: forge-assignment
+    - "read:jira-work"
+    - "write:jira-work"
+    - "storage:app"
