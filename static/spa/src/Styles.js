@@ -1,8 +1,8 @@
-import styled from 'styled-components';
-import { colors, elevation } from '@atlaskit/theme';
+import styled from "styled-components";
+import { colors, elevation } from "@atlaskit/theme";
 
 export const Card = styled.div`
-  ${elevation['e100']};
+  ${elevation["e100"]};
   background: ${colors.N0};
   position: relative;
   text-decoration: none;
@@ -34,43 +34,27 @@ export const LoadingContainer = styled.div`
   height: 100%;
 `;
 
+export const Box = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border: 1px dashed;
+  ${colors.N30}
+`;
+
+export const Text = styled.div`
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+`;
+
 export const Row = styled.div`
-  transition: .3s ease all;
+  display: flex;
+  transition: 0.3s ease all;
   padding: 8px;
   border-bottom: 1px solid ${colors.N30};
-
-  button {
-    opacity: 0;
-    transition: .2s ease all;
-    margin-left: 8px;
-  }
-
-  &:hover {
-    button {
-      opacity: 1;
-    }
-  }
-
-  ${props => `
-    ${props.isChecked ? 'text-decoration: line-through;' : ''}
-    ${props.isCompact ? 'padding: 0 6px;' : ''}
-    ${props.isCompact ? 'border: 0;' : ''}
-  `}
-`;
-
-export const IconContainer = styled.span`
-  position: relative;
-  height: 20px;
-  width: 24px;
-  align-self: center;
-  display: inline-flex;
-  flex-wrap: nowrap;
-  max-width: 100%;
-  position: relative;
-`;
-
-export const Icon = styled.span`
-  position: absolute;
 `;
 
 export const ScrollContainer = styled.div`
