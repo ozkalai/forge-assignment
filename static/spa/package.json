@@ -8,6 +8,7 @@
     "@atlaskit/button": "^15.1.2",
     "@atlaskit/checkbox": "^11.0.7",
     "@atlaskit/css-reset": "^6.0.5",
+    "@atlaskit/dropdown-menu": "^10.1.6",
     "@atlaskit/icon": "^21.1.4",
     "@atlaskit/lozenge": "^10.0.6",
     "@atlaskit/spinner": "^15.0.5",
