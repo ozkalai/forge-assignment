@@ -7,6 +7,7 @@ import { LoadingButton as Button } from "@atlaskit/button";
 // Custom Styles
 import { Card, Row, ScrollContainer, Box, Text } from "./Styles";
 import RowList from "./components/RowList";
+import DropdownMenuCustom from "./components/DropdownMenu";
 
 function App() {
   const [changeLog, setChangeLog] = useState([]);
@@ -36,6 +37,7 @@ function App() {
       <ScrollContainer>
         <RowList changeLog={changeLog} />
       </ScrollContainer>
+      <DropdownMenuCustom />
     </Card>
   );
 }
