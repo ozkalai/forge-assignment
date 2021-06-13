@@ -1,97 +1,130 @@
-import React, { useEffect, useState, Fragment } from 'react';
-import { invoke } from '@forge/bridge';
+import React, { useEffect, useState, Fragment } from "react";
+import { invoke } from "@forge/bridge";
 
 // Atlaskit
-import { LoadingButton as Button } from '@atlaskit/button';
-import { Checkbox } from '@atlaskit/checkbox';
-import CloseIcon from '@atlaskit/icon/glyph/editor/close';
-import TrashIcon from '@atlaskit/icon/glyph/editor/remove';
-import Textfield from '@atlaskit/textfield';
-import Lozenge from '@atlaskit/lozenge';
-import Spinner from '@atlaskit/spinner';
+import { LoadingButton as Button } from "@atlaskit/button";
+import { Checkbox } from "@atlaskit/checkbox";
+import CloseIcon from "@atlaskit/icon/glyph/editor/close";
+import TrashIcon from "@atlaskit/icon/glyph/editor/remove";
+import Textfield from "@atlaskit/textfield";
+import Lozenge from "@atlaskit/lozenge";
+import Spinner from "@atlaskit/spinner";
 
 // Custom Styles
 import {
-  Card, Row, Icon, IconContainer, Status, SummaryActions, SummaryCount, SummaryFooter,
-  ScrollContainer, Form, LoadingContainer
-} from './Styles';
+  Card,
+  Row,
+  Icon,
+  IconContainer,
+  Status,
+  SummaryActions,
+  SummaryCount,
+  SummaryFooter,
+  ScrollContainer,
+  Form,
+  LoadingContainer,
+} from "./Styles";
 
 function App() {
   const [todos, setTodos] = useState(null);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isFetched, setIsFetched] = useState(false);
   const [isDeleteAllShowing, setDeleteAllShowing] = useState(false);
   const [isDeletingAll, setDeletingAll] = useState(false);
+  const [changeLog, setChangeLog] = useState([]);
+
+  fetch("/rest/api/3/issue/TASK-1/changelog", {
+    method: "GET",
+    headers: {
+      Authorization: `Basic ${Buffer.from(
+        "melihozkalayy@gmail.com:FuCbGOTOQSWHXrtQ6NYwB7C9"
+      ).toString("base64")}`,
+      Accept: "application/json",
+    },
+  })
+    .then((response) => {
+      console.log(`Response: ${response.status} ${response.statusText}`);
+      return response.json();
+    })
+    .then((text) => {
+      debugger;
+      setChangeLog(text);
+    })
+    .catch((err) => console.error(err));
 
   if (!isFetched) {
     setIsFetched(true);
-    invoke('get-all').then(setTodos);
+    invoke("get-all").then(setTodos);
   }
 
   const createTodo = async (label) => {
     const newTodoList = [...todos, { label, isChecked: false, isSaving: true }];
 
     setTodos(newTodoList);
-  }
+  };
 
   const toggleTodo = (id) => {
     setTodos(
-      todos.map(todo => {
+      todos.map((todo) => {
         if (todo.id === id) {
           return { ...todo, isChecked: !todo.isChecked, isSaving: true };
         }
         return todo;
       })
-    )
-  }
+    );
+  };
 
   const deleteTodo = (id) => {
     setTodos(
-      todos.map(todo => {
+      todos.map((todo) => {
         if (todo.id === id) {
           return { ...todo, isDeleting: true };
         }
         return todo;
       })
-    )
-  }
+    );
+  };
 
   const deleteAllTodos = async () => {
     setDeletingAll(true);
 
-    await invoke('delete-all');
+    await invoke("delete-all");
 
     setTodos([]);
     setDeleteAllShowing(false);
     setDeletingAll(false);
-  }
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
     createTodo(input);
-    setInput('');
+    setInput("");
   };
 
   useEffect(() => {
     if (!todos) return;
-    if (!todos.find(todo => todo.isSaving || todo.isDeleting)) return;
+    if (!todos.find((todo) => todo.isSaving || todo.isDeleting)) return;
 
     Promise.all(
       todos.map((todo) => {
         if (todo.isSaving && !todo.id) {
-          return invoke('create', { label: todo.label, isChecked: false })
+          return invoke("create", { label: todo.label, isChecked: false });
         }
         if (todo.isSaving && todo.id) {
-          return invoke('update', { id: todo.id, label: todo.label, isChecked: todo.isChecked })
+          return invoke("update", {
+            id: todo.id,
+            label: todo.label,
+            isChecked: todo.isChecked,
+          });
         }
         if (todo.isDeleting && todo.id) {
-          return invoke('delete', { id: todo.id }).then(() => false);
+          return invoke("delete", { id: todo.id }).then(() => false);
         }
         return todo;
       })
     )
-    .then(saved => saved.filter(a => a))
-    .then(setTodos)
+      .then((saved) => saved.filter((a) => a))
+      .then(setTodos);
   }, [todos]);
 
   if (!todos) {
@@ -104,7 +137,7 @@ function App() {
     );
   }
 
-  const completedCount = todos.filter(todo => todo.isChecked).length;
+  const completedCount = todos.filter((todo) => todo.isChecked).length;
   const totalCount = todos.length;
 
   const Rows = () => (
@@ -114,11 +147,14 @@ function App() {
 
         return (
           <Row isChecked={isChecked} key={label}>
-            <Checkbox isChecked={isChecked} label={label} name={label} onChange={() => toggleTodo(id)} />
             <Status>
               {isSpinnerShowing ? <Spinner size="medium" /> : null}
               {isChecked ? <Lozenge appearance="success">Done</Lozenge> : null}
-              <Button size="small" spacing="none" onClick={() => deleteTodo(id)}>
+              <Button
+                size="small"
+                spacing="none"
+                onClick={() => deleteTodo(id)}
+              >
                 <IconContainer>
                   <Icon>
                     <CloseIcon />
@@ -132,30 +168,40 @@ function App() {
     </Fragment>
   );
 
-  const DeleteAll = () => isDeleteAllShowing ? (
-    <Button
-      appearance="danger"
-      spacing="compact"
-      isLoading={isDeletingAll}
-      isDisabled={isDeletingAll}
-      onClick={deleteAllTodos}
-    >
-      Delete All
-    </Button>
-  ) : (
-    <Button appearance="subtle" spacing="none" onClick={() => setDeleteAllShowing(true)}>
-      <IconContainer>
-        <Icon>
-          <TrashIcon />
-        </Icon>
-      </IconContainer>
-    </Button>
-  );
+  const DeleteAll = () =>
+    isDeleteAllShowing ? (
+      <Button
+        appearance="danger"
+        spacing="compact"
+        isLoading={isDeletingAll}
+        isDisabled={isDeletingAll}
+        onClick={deleteAllTodos}
+      >
+        Delete All
+      </Button>
+    ) : (
+      <Button
+        appearance="subtle"
+        spacing="none"
+        onClick={() => setDeleteAllShowing(true)}
+      >
+        <IconContainer>
+          <Icon>
+            <TrashIcon />
+          </Icon>
+        </IconContainer>
+      </Button>
+    );
 
-  const CompletedLozenge = () => <Lozenge>{completedCount}/{totalCount} Completed</Lozenge>;
+  const CompletedLozenge = () => (
+    <Lozenge>
+      {completedCount}/{totalCount} Completed
+    </Lozenge>
+  );
 
   return (
     <Card>
+      {JSON.stringify(changeLog)}
       <ScrollContainer>
         <Rows />
         <Row isCompact>
